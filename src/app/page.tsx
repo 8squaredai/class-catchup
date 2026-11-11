@@ -1,69 +1,37 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-
 export default function Home() {
+  const join = process.env.TWILIO_SANDBOX_JOIN;
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main>
+      <h1>Class Catch-up</h1>
+      <p className="muted">Missed class because you were sick or on leave? Get the summary on WhatsApp and ask questions about it.</p>
+
+      <div className="card">
+        <h2 style={{ marginTop: 0 }}>For students</h2>
+        <ol>
+          <li>
+            On WhatsApp, send <code>{join || "join <sandbox-code>"}</code> to <code>+1 415 523 8886</code> (one time).
+          </li>
+          <li>
+            Send <code>absent BA101</code> when you will miss a class (or <code>absent BA101 3</code> for 3 days).
+          </li>
+          <li>After class you get a summary with timestamps. Reply with any question; answers come only from the recording.</li>
+          <li>
+            Already missed it? Send <code>missed BA101</code>.
+          </li>
+        </ol>
+      </div>
+
+      <div className="card">
+        <h2 style={{ marginTop: 0 }}>How it works</h2>
+        <p>
+          Recording → ElevenLabs Scribe (transcript with speakers and timestamps) → Claude summary following a shared
+          <code> SKILL.md</code> → WhatsApp via Twilio → follow-up questions answered by Claude from the transcript, with
+          <code> [mm:ss]</code> citations, and an honest &quot;not covered&quot; when the class didn&apos;t cover it.
+        </p>
+        <p>
+          <a href="/admin">Professor / admin area →</a>
+        </p>
+      </div>
+    </main>
   );
 }

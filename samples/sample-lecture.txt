@@ -1,0 +1,32 @@
+[00:00] Professor: Okay, good morning everyone, let's get started. Before we dive in, a couple of admin things, so please listen up.
+[00:12] Professor: First, the CLV case study. It's due Friday, November 20th, at 11:59 PM, on Blackboard. Groups of three. One submission per group, and please put all three names on the first page.
+[00:31] Professor: Second, the midterm has moved. It was December 1st; it is now Wednesday, December 3rd, same room, same time. It covers everything up to and including today's session.
+[00:48] Professor: And for next week, please read Chapter 4 of the course reader, the one on churn. We'll build a churn model in class, so bring your laptops.
+[01:05] Student 1: Is the case study individual or group again?
+[01:08] Professor: Group, three people. If you don't have a group by Monday, email me and I'll assign you to one.
+[01:20] Professor: Alright. Today is customer lifetime value, CLV. The basic question is: how much is a customer worth to us, not today, but over the whole relationship?
+[01:38] Professor: Why do we care? Because it tells you how much you can afford to spend to acquire and keep a customer. If you don't know what a customer is worth, every marketing budget is a guess.
+[02:05] Professor: The simplest version, the one I want you to know cold for the midterm, is CLV equals m times r, divided by one plus d minus r.
+[02:20] Professor: m is the margin per customer per period. Not revenue: margin. r is the retention rate, the probability a customer stays for another period. d is the discount rate.
+[02:42] Professor: This formula assumes retention is constant and the margin is constant. Keep that in mind, because in real data neither is true, and we'll come back to that.
+[03:05] Professor: Let's do a quick example. Margin is fifty dollars a year. Retention is eighty percent. Discount rate is ten percent.
+[03:20] Professor: So fifty times zero point eight is forty. Divided by one plus zero point one minus zero point eight, which is zero point three. Forty divided by zero point three is about one hundred thirty-three dollars.
+[03:42] Professor: So each customer is worth about one hundred thirty-three dollars over their lifetime, in today's money.
+[03:55] Student 2: Does that number include what we paid to acquire the customer?
+[04:00] Professor: Great question. No. CLV here is the value of the customer after you've acquired them. You compare it against CAC, customer acquisition cost.
+[04:15] Professor: The rule of thumb many companies use is that CLV should be at least three times CAC. If you're paying one hundred twenty dollars to acquire a customer worth one hundred thirty-three, that's a business with almost no room for error.
+[04:38] Professor: Now, what moves CLV the most? Let's look at sensitivity. If retention goes from eighty to ninety percent, the denominator goes from zero point three to zero point two.
+[04:55] Professor: Fifty times zero point nine is forty-five, divided by zero point two is two hundred twenty-five. So a ten-point increase in retention takes CLV from one thirty-three to two twenty-five. That's almost seventy percent more.
+[05:18] Professor: That's the key insight of today: retention is the biggest lever. Small improvements in retention have a large effect on lifetime value.
+[05:35] Professor: Okay, second part. Doing this by segment. One average CLV for the whole company hides a lot.
+[05:48] Professor: In the case study you'll have three segments: students, families and small businesses. Compute CLV for each segment separately, with its own margin and its own retention.
+[06:05] Professor: What you'll usually find is that a small segment with high retention is worth more than a big segment with low retention. That changes where you put your acquisition budget.
+[06:22] Professor: Third part, retention isn't constant. If you plot a cohort, say all customers who joined in January, and track what percentage is still active each month, you get a retention curve.
+[06:40] Professor: That curve usually drops fast at the beginning and then flattens out. The customers who survive the first few months tend to stay. So using one constant retention rate undervalues your loyal customers and overvalues new ones.
+[07:02] Professor: In the case, use the cohort table in tab two to estimate retention by year, not one single number. That's where most groups lose points.
+[07:18] Student 1: What about when there's no subscription, like a store where people just come back whenever?
+[07:24] Professor: Right. That's the difference between contractual and non-contractual settings. With a subscription, you see the churn: they cancel. In a store, you never see someone leave; they just stop showing up.
+[07:42] Professor: For non-contractual settings there are probabilistic models, for example the BG/NBD model, that estimate the probability a customer is still "alive". We won't do the math in this course; for the case study, assume contractual.
+[08:02] Professor: Last thing: common mistakes. One, using revenue instead of margin. Two, forgetting to discount. Three, using a single average across very different segments. If you avoid those three, you're already ahead of most analyses I see in industry.
+[08:25] Professor: Okay, quick recap: CLV tells you what a customer is worth over the relationship. Use margin, not revenue. Retention is the biggest lever. Do it by segment, and use cohort retention curves rather than one number.
+[08:45] Professor: Next class is churn: predicting who is about to leave, which is the natural follow-up to today. Read Chapter 4 and bring your laptops. See you Wednesday.

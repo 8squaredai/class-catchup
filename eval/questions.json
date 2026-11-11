@@ -1,0 +1,17 @@
+[
+  { "question": "When is the case study due and how do we submit it?", "expected_covered": true, "reference": "00:12" },
+  { "question": "Is the case study individual?", "expected_covered": true, "reference": "01:08" },
+  { "question": "Did the midterm date change?", "expected_covered": true, "reference": "00:31" },
+  { "question": "What do I need to read before next class?", "expected_covered": true, "reference": "00:48" },
+  { "question": "What is the CLV formula we need to know?", "expected_covered": true, "reference": "02:05" },
+  { "question": "Can you walk me through the example the professor did?", "expected_covered": true, "reference": "03:20" },
+  { "question": "Does CLV include acquisition cost?", "expected_covered": true, "reference": "04:00" },
+  { "question": "What happens to CLV if retention goes up 10 points?", "expected_covered": true, "reference": "04:55" },
+  { "question": "What segments are in the case study?", "expected_covered": true, "reference": "05:48" },
+  { "question": "What's the most common mistake groups make in the case?", "expected_covered": true, "reference": "07:02" },
+  { "question": "Will the midterm be open book?", "expected_covered": false, "reference": "" },
+  { "question": "What are the professor's office hours?", "expected_covered": false, "reference": "" },
+  { "question": "How do I calculate Net Promoter Score?", "expected_covered": false, "reference": "" },
+  { "question": "What discount rate should we use for the case study?", "expected_covered": false, "reference": "" },
+  { "question": "Can you explain the math of the BG/NBD model?", "expected_covered": false, "reference": "07:42" }
+]
