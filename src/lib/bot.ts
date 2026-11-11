@@ -1,6 +1,6 @@
 import { db, must } from "./supabase";
 import { env } from "./env";
-import { sendWhatsApp } from "./twilio";
+import { sendMessage } from "./messaging";
 import { answerQuestion, type Turn } from "./claude";
 import { transcriptForPrompt } from "./transcript";
 import { getLecture, getSegments, deliverSummary, lectureLabel } from "./pipeline";
@@ -56,7 +56,7 @@ async function log(studentId: string, direction: "in" | "out", kind: string, bod
 }
 
 async function reply(student: Student, kind: string, body: string, lectureId: string | null = null) {
-  const res = await sendWhatsApp(student.whatsapp, body);
+  const res = await sendMessage(student.whatsapp, body);
   const failed = res.find((r) => r.error);
   await log(student.id, "out", kind, body, lectureId, { twilio_sid: res[0]?.sid ?? null, status: failed ? "failed" : res[0]?.status, error: failed?.error ?? null });
 }
@@ -64,7 +64,7 @@ async function reply(student: Student, kind: string, body: string, lectureId: st
 const CONSENT_NOTE =
   "By using this you agree to receive class summaries generated from the session recording. Reply *stop* anytime.";
 
-/** Handle one inbound WhatsApp message. Runs after the webhook has already answered Twilio. */
+/** Handle one inbound chat message (Telegram or WhatsApp). Runs after the webhook has already answered. */
 export async function handleInbound(from: string, rawBody: string, profileName: string | null) {
   const body = rawBody.trim();
   const student = await upsertStudent(from, profileName);

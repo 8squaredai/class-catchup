@@ -206,7 +206,7 @@ export default function Admin() {
         </table>
       </div>
 
-      <h2>WhatsApp log</h2>
+      <h2>Message log</h2>
       <div className="card">
         <table>
           <thead><tr><th>Time</th><th>Student</th><th></th><th>Message</th></tr></thead>

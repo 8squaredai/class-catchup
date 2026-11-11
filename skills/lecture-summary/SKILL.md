@@ -1,6 +1,6 @@
 ---
 name: lecture-summary
-description: Turn a timestamped lecture transcript into a catch-up summary for a student who missed class (sick or on leave), plus a short WhatsApp version. Use whenever summarizing a recorded class session for an absent student.
+description: Turn a timestamped lecture transcript into a catch-up summary for a student who missed class (sick or on leave), plus a short chat-message version (Telegram/WhatsApp). Use whenever summarizing a recorded class session for an absent student.
 ---
 
 # Lecture catch-up summary
@@ -71,9 +71,9 @@ Return two fields.
 Omit "Questions from class" if there were none. Keep the whole thing to roughly
 300–600 words for a 60–90 minute class.
 
-### `whatsapp_text` — the WhatsApp message (plain text, under 1,200 characters)
+### `whatsapp_text` — the chat message for Telegram/WhatsApp (plain text, under 1,200 characters)
 
-WhatsApp supports *bold* with single asterisks and no headings. Format:
+Telegram and WhatsApp both support *bold* with single asterisks and no headings. Format:
 
 ```
 📚 *<Course code> – <lecture title>* (<date>)

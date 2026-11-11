@@ -1,16 +1,15 @@
 export default function Home() {
-  const join = process.env.TWILIO_SANDBOX_JOIN;
-  const sandboxNumber = (process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886").replace(/^whatsapp:/, "");
+  const bot = process.env.TELEGRAM_BOT_USERNAME;
   return (
     <main>
       <h1>Class Catch-up</h1>
-      <p className="muted">Missed class because you were sick or on leave? Get the summary on WhatsApp and ask questions about it.</p>
+      <p className="muted">Missed class because you were sick or on leave? Get the summary on Telegram and ask questions about it.</p>
 
       <div className="card">
         <h2 style={{ marginTop: 0 }}>For students</h2>
         <ol>
           <li>
-            On WhatsApp, send <code>{join || "join <sandbox-code>"}</code> to <code>{sandboxNumber}</code> (one time).
+            Open {bot ? <a href={`https://t.me/${bot}`}>@{bot}</a> : "our Telegram bot"} and press <b>Start</b> (one time).
           </li>
           <li>
             Send <code>absent BA101</code> when you will miss a class (or <code>absent BA101 3</code> for 3 days).
@@ -26,7 +25,7 @@ export default function Home() {
         <h2 style={{ marginTop: 0 }}>How it works</h2>
         <p>
           Recording → ElevenLabs Scribe (transcript with speakers and timestamps) → Claude summary following a shared
-          <code> SKILL.md</code> → WhatsApp via Twilio → follow-up questions answered by Claude from the transcript, with
+          <code> SKILL.md</code> → Telegram bot (WhatsApp via Twilio is built in as a second channel) → follow-up questions answered by Claude from the transcript, with
           <code> [mm:ss]</code> citations, and an honest &quot;not covered&quot; when the class didn&apos;t cover it.
         </p>
         <p>

@@ -1,9 +1,9 @@
 # Class Catch-up
 
-**Missed class because you were sick or on leave? Get the summary on WhatsApp, then ask it questions.**
+**Missed class because you were sick or on leave? Get the summary on Telegram, then ask it questions.**
 
 Professors don't have time to email every absent student. Sessions get recorded anyway. This app turns the
-recording into a timestamped catch-up summary, sends it on WhatsApp to every student who reported being absent,
+recording into a timestamped catch-up summary, sends it on Telegram to every student who reported being absent,
 and answers their follow-up questions *only from what was said in class*, citing the moment in the recording,
 or saying honestly that it wasn't covered.
 
@@ -15,9 +15,9 @@ Recording ─▶ Supabase Storage ─▶ ElevenLabs Scribe v2 (speakers + word t
                                          ▼
                          segments in Postgres ("[12:34] Professor: …")
                                          │
-              Claude + skills/lecture-summary/SKILL.md ─▶ summary (web) + WhatsApp version
+              Claude + skills/lecture-summary/SKILL.md ─▶ summary (web) + chat version
                                          │
-            absent students (texted "absent BA101") ◀── Twilio WhatsApp ──▶ follow-up questions
+            absent students (texted "absent BA101") ◀──  Telegram bot   ──▶ follow-up questions
                                                                             │
                                          Claude answers from cached transcript, cites [mm:ss]
 ```
@@ -38,29 +38,33 @@ Recording ─▶ Supabase Storage ─▶ ElevenLabs Scribe v2 (speakers + word t
 2. **Env:** `cp .env.example .env.local` and fill in:
    - Supabase: Project Settings → API Keys → **secret** key (`sb_secret_…`). The URL is already set.
    - `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`
-   - Twilio: Account SID + Auth Token; WhatsApp Sandbox join phrase (Console → Messaging → Try it out → Send a WhatsApp message)
+   - Telegram: message **@BotFather** → `/newbot` → copy the token into `TELEGRAM_BOT_TOKEN`. Set `TELEGRAM_WEBHOOK_SECRET`
+     to any random string (letters, digits, `_`, `-`).
+   - Twilio (optional, only for the WhatsApp channel): Account SID + Auth Token, sandbox number and join phrase.
    - `ADMIN_PASSWORD` for `/admin`
 3. **Run:** `npm run dev` → http://localhost:3001
-4. **Expose for Twilio:** `ngrok http 3001` (or `cloudflared tunnel --url http://localhost:3001`).
-   Put the https URL in `PUBLIC_BASE_URL` in `.env.local` and restart `npm run dev`.
-5. **Twilio Sandbox settings → "When a message comes in":** `https://<your-url>/api/whatsapp`, method **POST**.
-6. **Join the sandbox** from your phone: WhatsApp `join <your-code>` to the sandbox number shown in Twilio (Messaging → Try it out → Send a WhatsApp message), and put that number in `TWILIO_WHATSAPP_FROM`.
+4. **Connect the bot** to a public https URL (your Vercel URL, or an ngrok tunnel to :3001 for local testing):
+   `npm run telegram:setup -- https://<your-url>`. This sets the webhook to `/api/telegram` and adds the command menu.
+   Put the printed bot username in `TELEGRAM_BOT_USERNAME` so the homepage links to it.
+5. **Start the bot** from your phone: open `https://t.me/<bot username>` and press **Start**.
 
 The database schema is already applied to Supabase project `nendnnxipxsnispborob` (see `supabase/migrations/`),
 with one course seeded: **BA101 – Marketing Analytics**.
 
 ## Try it in 3 minutes (no recording needed)
 
-1. From WhatsApp send: `absent BA101`, which marks you absent today and records consent.
+1. In the Telegram bot send: `absent BA101`, which marks you absent today and records consent.
 2. Open http://localhost:3001/admin → create a lecture for BA101 dated today → **Paste transcript** → paste
    `samples/sample-lecture.txt` → **Summarize** → **Send to absent**.
-3. The summary arrives on WhatsApp. Reply: *"when is the case study due?"*, then *"will the midterm be open book?"*
+3. The summary arrives on Telegram. Reply: *"when is the case study due?"*, then *"will the midterm be open book?"*
    (not covered, so the bot should say so).
 
 With a real recording: **Upload audio** (mono MP3 at 64 kbps keeps a 90-min class under Supabase's 50 MB free limit;
 `ffmpeg -i class.mp4 -ac 1 -b:a 64k class.mp3`) → **Transcribe** → Summarize → Send.
 
-## WhatsApp commands
+## Bot commands
+
+The same commands work on Telegram (with or without a leading `/`) and WhatsApp.
 
 | Message | Effect |
 |---|---|
@@ -86,7 +90,8 @@ Run it on 2–3 real lectures and put the table in the write-up.
 1. Push to GitHub, import in Vercel (or `vercel` CLI).
 2. Add every variable from `.env.local` in Vercel → Settings → Environment Variables, with
    `PUBLIC_BASE_URL=https://<project>.vercel.app` and `TWILIO_SKIP_SIGNATURE` unset.
-3. Point the Twilio Sandbox webhook to `https://<project>.vercel.app/api/whatsapp`.
+3. Redeploy, then run `npm run telegram:setup -- https://<project>.vercel.app` once.
+   `TELEGRAM_WEBHOOK_SECRET` must be identical locally and in Vercel.
 
 ## Privacy, consent and limits
 
@@ -95,8 +100,12 @@ Run it on 2–3 real lectures and put the table in the write-up.
   Summary pages are reachable only through an unguessable link.
 - **Classmates are anonymised** ("Student 1"); the professor is the speaker with the most talk time.
 - **Professor approval** should be required before a course's recordings are processed (institutional/FERPA policy).
-- **WhatsApp Sandbox** is for prototyping: each student must send the join code, and free-form messages only reach
-  students who wrote in the last 24h. Production needs a WhatsApp Business sender + approved templates.
+- **Channels:** Telegram is the live channel: free, no sandbox join code, and no 24-hour messaging window, which suits
+  summaries that arrive after class. WhatsApp is already built in as a second channel (`src/lib/twilio.ts`,
+  `/api/whatsapp`): each student's address is stored as `telegram:<chat id>` or `whatsapp:+1…`, and
+  `src/lib/messaging.ts` routes every message to the right one. Turning WhatsApp on needs a paid (upgraded) Twilio
+  account, because trial accounts can't set the incoming-message webhook. For production it needs a WhatsApp Business
+  sender + approved templates, and free-form messages only reach students who wrote in the last 24h.
 - **SMS / iMessage:** US SMS needs toll-free verification or A2P 10DLC (days to weeks); iMessage has no public API.
 - **Accuracy:** transcription errors (names, formulas, accents) flow into the summary. Citations make every claim
   checkable against the recording, and the bot is instructed to say "not covered" instead of guessing.

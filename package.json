@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "eval": "tsx --env-file=.env.local scripts/eval.ts",
+    "telegram:setup": "tsx --env-file=.env.local scripts/telegram-setup.ts",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {

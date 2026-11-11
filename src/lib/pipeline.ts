@@ -3,7 +3,7 @@ import { db, must, type Lecture, type Segment } from "./supabase";
 import { env } from "./env";
 import { wordsToSegments, transcriptForPrompt, fmtTime } from "./transcript";
 import { summarizeTranscript } from "./claude";
-import { sendWhatsApp } from "./twilio";
+import { sendMessage } from "./messaging";
 
 export const BUCKET = "lectures";
 
@@ -116,7 +116,7 @@ export async function summaryLink(lectureId: string) {
 export async function deliverSummary(studentId: string, whatsapp: string, lectureId: string) {
   const { url, whatsapp_text } = await summaryLink(lectureId);
   const body = `${whatsapp_text}\n\n📄 Full summary: ${url}`;
-  const results = await sendWhatsApp(whatsapp, body);
+  const results = await sendMessage(whatsapp, body);
   const failed = results.find((r) => r.error);
   await db().from("messages").insert({
     student_id: studentId,

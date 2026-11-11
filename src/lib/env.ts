@@ -14,6 +14,9 @@ export const env = {
   twilioToken: () => required("TWILIO_AUTH_TOKEN"),
   twilioFrom: () => process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886",
   sandboxJoin: () => process.env.TWILIO_SANDBOX_JOIN || "",
+  telegramToken: () => required("TELEGRAM_BOT_TOKEN"),
+  telegramWebhookSecret: () => required("TELEGRAM_WEBHOOK_SECRET"),
+  telegramBotUsername: () => process.env.TELEGRAM_BOT_USERNAME || "",
   publicBaseUrl: () => required("PUBLIC_BASE_URL").replace(/\/$/, ""),
   skipSignature: () => process.env.TWILIO_SKIP_SIGNATURE === "true" && process.env.NODE_ENV !== "production",
 };

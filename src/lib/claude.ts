@@ -75,7 +75,7 @@ Rules:
 - If the transcript does not cover the question, set "covered" to false and say briefly that it was not covered in this session and that they should ask the professor. Do not guess.
 - If it is partly covered, answer the covered part, cite it, and say what was not covered.
 - Students in the transcript are anonymous; never guess who they are.
-- Keep answers short enough for WhatsApp: at most ~8 lines / 900 characters. Plain text; *single asterisks* for bold.
+- Keep answers short enough for a chat message (Telegram/WhatsApp): at most ~8 lines / 900 characters. Plain text; *single asterisks* for bold.
 - Greetings or thanks: reply briefly and set "covered" to true.`;
 
 export type Turn = { role: "user" | "assistant"; content: string };
