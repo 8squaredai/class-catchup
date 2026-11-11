@@ -40,11 +40,11 @@ Recording ─▶ Supabase Storage ─▶ ElevenLabs Scribe v2 (speakers + word t
    - `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`
    - Twilio: Account SID + Auth Token; WhatsApp Sandbox join phrase (Console → Messaging → Try it out → Send a WhatsApp message)
    - `ADMIN_PASSWORD` for `/admin`
-3. **Run:** `npm run dev` → http://localhost:3000
-4. **Expose for Twilio:** `ngrok http 3000` (or `cloudflared tunnel --url http://localhost:3000`).
+3. **Run:** `npm run dev` → http://localhost:3001
+4. **Expose for Twilio:** `ngrok http 3001` (or `cloudflared tunnel --url http://localhost:3001`).
    Put the https URL in `PUBLIC_BASE_URL` in `.env.local` and restart `npm run dev`.
 5. **Twilio Sandbox settings → "When a message comes in":** `https://<your-url>/api/whatsapp`, method **POST**.
-6. **Join the sandbox** from your phone: WhatsApp `join <your-code>` to **+1 415 523 8886**.
+6. **Join the sandbox** from your phone: WhatsApp `join <your-code>` to the sandbox number shown in Twilio (Messaging → Try it out → Send a WhatsApp message), and put that number in `TWILIO_WHATSAPP_FROM`.
 
 The database schema is already applied to Supabase project `nendnnxipxsnispborob` (see `supabase/migrations/`),
 with one course seeded: **BA101 – Marketing Analytics**.
@@ -52,7 +52,7 @@ with one course seeded: **BA101 – Marketing Analytics**.
 ## Try it in 3 minutes (no recording needed)
 
 1. From WhatsApp send: `absent BA101`, which marks you absent today and records consent.
-2. Open http://localhost:3000/admin → create a lecture for BA101 dated today → **Paste transcript** → paste
+2. Open http://localhost:3001/admin → create a lecture for BA101 dated today → **Paste transcript** → paste
    `samples/sample-lecture.txt` → **Summarize** → **Send to absent**.
 3. The summary arrives on WhatsApp. Reply: *"when is the case study due?"*, then *"will the midterm be open book?"*
    (not covered, so the bot should say so).

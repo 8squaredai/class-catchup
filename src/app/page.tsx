@@ -1,5 +1,6 @@
 export default function Home() {
   const join = process.env.TWILIO_SANDBOX_JOIN;
+  const sandboxNumber = (process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886").replace(/^whatsapp:/, "");
   return (
     <main>
       <h1>Class Catch-up</h1>
@@ -9,7 +10,7 @@ export default function Home() {
         <h2 style={{ marginTop: 0 }}>For students</h2>
         <ol>
           <li>
-            On WhatsApp, send <code>{join || "join <sandbox-code>"}</code> to <code>+1 415 523 8886</code> (one time).
+            On WhatsApp, send <code>{join || "join <sandbox-code>"}</code> to <code>{sandboxNumber}</code> (one time).
           </li>
           <li>
             Send <code>absent BA101</code> when you will miss a class (or <code>absent BA101 3</code> for 3 days).

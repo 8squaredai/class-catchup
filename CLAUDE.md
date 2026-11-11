@@ -29,6 +29,6 @@ for students who were sick or on leave, with follow-up Q&A answered only from th
 - Students in transcripts are anonymised ("Student 1"); keep it that way.
 
 ## Commands
-- `npm run dev` — local server on :3000 (expose with `ngrok http 3000` for Twilio)
+- `npm run dev` — local server on :3001 (expose with `ngrok http 3001` for Twilio)
 - `npm run typecheck`, `npm run lint`, `npm run build`
 - `npm run eval -- --sample` — load the sample lecture and score the Q&A
