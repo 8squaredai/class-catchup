@@ -5,12 +5,12 @@
  */
 
 export const TEMPLATES = [
-  { id: "quick", emoji: "⚡", label: "Quick recap", when: "Light session, nothing critical", gives: "3 bullets + any deadlines. Readable in 20 seconds.", addons: [] },
-  { id: "standard", emoji: "📘", label: "Standard catch-up", when: "A normal lecture", gives: "Announcements, topics, class Q&A and to-dos.", addons: ["class_questions", "ask_professor"] },
-  { id: "study", emoji: "🎓", label: "Study guide", when: "Exam-relevant material", gives: "Key concepts in the professor's words, examples, exam flags, self-test.", addons: ["class_questions", "quiz", "glossary"] },
-  { id: "watch", emoji: "🧭", label: "Watch guide", when: "Long lecture worth rewatching", gives: "Chapter map of the recording: must-watch vs. skippable parts.", addons: ["ask_professor"] },
-  { id: "lab", emoji: "🧪", label: "Lab / workshop", when: "Hands-on or discussion session", gives: "The activity, what groups found, and exactly what to do to catch up.", addons: ["class_questions"] },
-  { id: "admin", emoji: "📋", label: "Admin only", when: "Mostly logistics", gives: "Only deadlines, readings, grading and room/time changes.", addons: [] },
+  { id: "quick", icon: "zap", emoji: "⚡", label: "Quick recap", when: "Light session, nothing critical", gives: "3 bullets + any deadlines. Readable in 20 seconds.", addons: [] },
+  { id: "standard", icon: "book", emoji: "📘", label: "Standard catch-up", when: "A normal lecture", gives: "Announcements, topics, class Q&A and to-dos.", addons: ["class_questions", "ask_professor"] },
+  { id: "study", icon: "cap", emoji: "🎓", label: "Study guide", when: "Exam-relevant material", gives: "Key concepts in the professor's words, examples, exam flags, self-test.", addons: ["class_questions", "quiz", "glossary"] },
+  { id: "watch", icon: "compass", emoji: "🧭", label: "Watch guide", when: "Long lecture worth rewatching", gives: "Chapter map of the recording: must-watch vs. skippable parts.", addons: ["ask_professor"] },
+  { id: "lab", icon: "flask", emoji: "🧪", label: "Lab / workshop", when: "Hands-on or discussion session", gives: "The activity, what groups found, and exactly what to do to catch up.", addons: ["class_questions"] },
+  { id: "admin", icon: "clipboard", emoji: "📋", label: "Admin only", when: "Mostly logistics", gives: "Only deadlines, readings, grading and room/time changes.", addons: [] },
 ] as const;
 
 export const ADDONS = [

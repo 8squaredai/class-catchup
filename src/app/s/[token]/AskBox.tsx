@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@/components/Icon";
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -33,16 +34,16 @@ export default function AskBox({ token }: { token: string }) {
 
   return (
     <section className="card">
-      <h2 style={{ marginTop: 0 }}>Ask about this class</h2>
+      <h2 style={{ marginTop: 0, display: "flex", gap: 8, alignItems: "center" }}><Icon name="message" size={18} /> Ask about this class</h2>
       <div className="chat">
         {turns.map((t, i) => (
           <div key={i} className={`bubble ${t.role}`}>{t.content}</div>
         ))}
-        {busy && <div className="bubble assistant muted">Checking the recording…</div>}
+        {busy && <div className="bubble assistant muted"><Icon name="loader" size={14} /> Checking the recording…</div>}
       </div>
       <form onSubmit={ask} className="row" style={{ marginTop: 12 }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="e.g. What did the professor say about the midterm?" style={{ flex: 1 }} />
-        <button disabled={busy}>Ask</button>
+        <button className="btn-primary" disabled={busy}><Icon name="send" size={15} /> Ask</button>
       </form>
     </section>
   );
