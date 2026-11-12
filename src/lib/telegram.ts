@@ -20,7 +20,7 @@ export async function sendTelegram(chatId: string, body: string): Promise<SendRe
   const results: SendResult[] = [];
   for (const part of chunk(body, 4000)) {
     try {
-      let r = await telegramApi("sendMessage", { chat_id: chatId, text: part, parse_mode: "Markdown", link_preview_options: { is_disabled: true } });
+      let r = await telegramApi("sendMessage", { chat_id: chatId, text: part.replace(/\[/g, "\\["), parse_mode: "Markdown", link_preview_options: { is_disabled: true } });
       if (!r.ok && r.error_code === 400 && /parse entities/i.test(r.description ?? "")) {
         r = await telegramApi("sendMessage", { chat_id: chatId, text: part, link_preview_options: { is_disabled: true } });
       }

@@ -26,7 +26,7 @@ Recording ─▶ Supabase Storage ─▶ ElevenLabs Scribe v2 (speakers + word t
 
 | Where | What |
 |---|---|
-| `skills/lecture-summary/SKILL.md` | Agent Skill defining the summary format and rules. The app loads it at runtime as the system prompt, so Claude Code and production share one definition. |
+| `skills/lecture-summary/SKILL.md` + `templates/*.md` | Agent Skill with the shared rules, plus 6 templates the professor picks from when clicking **Summarize** (quick recap, standard, study guide, watch guide, lab/workshop, admin only), optional add-ons (class Q&A, mini quiz, glossary, "ask the professor") and a free-text note. The app sends Claude the skill plus **only the chosen template** (progressive disclosure), so Claude Code and production share one definition. |
 | `src/lib/claude.ts` → `summarizeTranscript` | Messages API with **structured outputs** (JSON schema) returning `markdown` + `whatsapp_text`. |
 | `src/lib/claude.ts` → `answerQuestion` | Q&A grounded in the transcript, **prompt caching** on the transcript block, structured `{covered, answer}` so "not covered" is explicit and measurable. Multi-turn history so follow-ups work. |
 | Development | Built with Claude Code (`CLAUDE.md` in repo). |

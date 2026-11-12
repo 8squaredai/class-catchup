@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ADDONS, TEMPLATES, defaultOptions, templateInfo, type SummaryOptions, type TemplateId } from "@/lib/templates";
 
+type Summary = { share_token: string; template?: string | null };
 type Course = { id: string; code: string; name: string; professor: string | null };
 type Lecture = {
   id: string;
@@ -12,7 +14,7 @@ type Lecture = {
   audio_path: string | null;
   duration_s: number | null;
   courses: { code: string };
-  summaries: { share_token: string } | { share_token: string }[] | null;
+  summaries: Summary | Summary[] | null;
 };
 type Absence = { id: string; start_date: string; end_date: string; reason: string; students: { name: string | null; whatsapp: string }; courses: { code: string } };
 type Message = { id: number; direction: string; kind: string; body: string; status: string | null; error: string | null; created_at: string; students: { name: string | null; whatsapp: string } | null };
@@ -31,10 +33,10 @@ async function api(path: string, body?: unknown) {
   return data;
 }
 
-function token(l: Lecture) {
-  const s = Array.isArray(l.summaries) ? l.summaries[0] : l.summaries;
-  return s?.share_token;
+function summaryOf(l: Lecture) {
+  return (Array.isArray(l.summaries) ? l.summaries[0] : l.summaries) ?? null;
 }
+const token = (l: Lecture) => summaryOf(l)?.share_token;
 
 export default function Admin() {
   const [data, setData] = useState<Overview | null>(null);
@@ -42,6 +44,21 @@ export default function Admin() {
   const [msg, setMsg] = useState<string | null>(null);
   const [pasteFor, setPasteFor] = useState<string | null>(null);
   const [pasteText, setPasteText] = useState("");
+  const [sumFor, setSumFor] = useState<Lecture | null>(null);
+  const [opts, setOpts] = useState<SummaryOptions>(defaultOptions());
+
+  useEffect(() => {
+    if (!sumFor) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSumFor(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sumFor]);
+
+  function openSummarize(l: Lecture) {
+    const used = summaryOf(l)?.template;
+    setOpts(defaultOptions(TEMPLATES.some((t) => t.id === used) ? (used as TemplateId) : undefined));
+    setSumFor(l);
+  }
 
   const load = useCallback(async () => setData(await api("/api/admin/overview")), []);
   useEffect(() => {
@@ -131,7 +148,14 @@ export default function Admin() {
                   {l.duration_s ? <div className="muted" style={{ fontSize: 12 }}>{Math.round(l.duration_s / 60)} min</div> : null}
                   {l.error && <div className="error">{l.error}</div>}
                 </td>
-                <td><span className={`pill ${l.status === "error" ? "err" : ["summarized", "sent"].includes(l.status) ? "ok" : ""}`}>{l.status}</span></td>
+                <td>
+                  <span className={`pill ${l.status === "error" ? "err" : ["summarized", "sent"].includes(l.status) ? "ok" : ""}`}>{l.status}</span>
+                  {summaryOf(l)?.template && (
+                    <div className="muted" style={{ fontSize: 12, marginTop: 4, whiteSpace: "nowrap" }}>
+                      {templateInfo(summaryOf(l)?.template).emoji} {templateInfo(summaryOf(l)?.template).label}
+                    </div>
+                  )}
+                </td>
                 <td>
                   <div className="row">
                     <label className="secondary" style={{ cursor: "pointer", fontSize: 13 }}>
@@ -142,7 +166,7 @@ export default function Admin() {
                     <button type="button" disabled={!!busy || !l.audio_path} onClick={() => run("Transcribe", () => api(`/api/admin/lectures/${l.id}/transcribe`, {}))}>
                       {busy === "Transcribe" ? "Transcribing…" : "Transcribe"}
                     </button>
-                    <button type="button" disabled={!!busy || !["transcribed", "summarized", "sent", "error"].includes(l.status)} onClick={() => run("Summarize", () => api(`/api/admin/lectures/${l.id}/summarize`, {}))}>
+                    <button type="button" disabled={!!busy || !["transcribed", "summarized", "sent", "error"].includes(l.status)} onClick={() => openSummarize(l)}>
                       {busy === "Summarize" ? "Summarizing…" : "Summarize"}
                     </button>
                     <button type="button" disabled={!!busy || !token(l)} onClick={() => run("Send", () => api(`/api/admin/lectures/${l.id}/send`, {}))}>
@@ -244,6 +268,67 @@ export default function Admin() {
         <input name="professor" placeholder="Professor" />
         <button disabled={!!busy}>Add</button>
       </form>
+
+      {sumFor && (
+        <div className="modal-backdrop" onClick={() => setSumFor(null)}>
+          <div className="modal card" role="dialog" aria-modal="true" aria-labelledby="sum-title" onClick={(e) => e.stopPropagation()}>
+            <h2 id="sum-title" style={{ marginTop: 0 }}>Summarize “{sumFor.title}”</h2>
+            <p className="muted" style={{ marginTop: -4 }}>How should absent students get this class?</p>
+
+            <div className="tpl-grid" role="radiogroup" aria-label="Summary template">
+              {TEMPLATES.map((t) => (
+                <label key={t.id} className={`tpl${opts.template === t.id ? " on" : ""}`}>
+                  <input type="radio" name="template" checked={opts.template === t.id} onChange={() => setOpts({ ...defaultOptions(t.id), note: opts.note })} />
+                  <span className="tpl-title">{t.emoji} {t.label}</span>
+                  <span className="muted tpl-when">{t.when}</span>
+                  <span className="tpl-gives">{t.gives}</span>
+                </label>
+              ))}
+            </div>
+
+            <h3>Add-ons</h3>
+            <div className="row" style={{ gap: "6px 18px" }}>
+              {ADDONS.map((a) => (
+                <label key={a.id} className="check">
+                  <input
+                    type="checkbox"
+                    checked={opts.addons.includes(a.id)}
+                    onChange={(e) => setOpts({ ...opts, addons: e.target.checked ? [...opts.addons, a.id] : opts.addons.filter((x) => x !== a.id) })}
+                  />
+                  {a.label}
+                </label>
+              ))}
+            </div>
+
+            <h3>
+              Note for Claude <span className="muted" style={{ fontWeight: 400 }}>(optional)</span>
+            </h3>
+            <textarea
+              className="note"
+              value={opts.note}
+              maxLength={1000}
+              onChange={(e) => setOpts({ ...opts, note: e.target.value })}
+              placeholder="e.g. Focus on mechanics vs. dynamics and skip the syllabus intro."
+            />
+            <p className="muted" style={{ fontSize: 12, margin: "4px 0 0" }}>Steers what to emphasise. Claude still only uses what was said in the recording.</p>
+
+            <div className="row" style={{ justifyContent: "flex-end", marginTop: 16 }}>
+              <button type="button" className="secondary" onClick={() => setSumFor(null)}>Cancel</button>
+              <button
+                type="button"
+                disabled={!!busy}
+                onClick={() => {
+                  const l = sumFor;
+                  setSumFor(null);
+                  run("Summarize", () => api(`/api/admin/lectures/${l.id}/summarize`, opts));
+                }}
+              >
+                Summarize as {templateInfo(opts.template).label}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -17,8 +17,10 @@ for students who were sick or on leave, with follow-up Q&A answered only from th
   `students.whatsapp`, a legacy column name).
 
 ## Where things live
-- `skills/lecture-summary/SKILL.md` — the summary format. It is loaded at runtime as the system prompt, so
-  edit the format there, not in code.
+- `skills/lecture-summary/SKILL.md` — shared summary rules + add-ons; `templates/<id>.md` — one file per template.
+  The app sends SKILL.md + the chosen template as the system prompt, so edit formats there, not in code.
+  Template ids, labels and add-ons for the UI live in `src/lib/templates.ts` (keep both in sync).
+- Claude thinks before answering and thinking counts toward `max_tokens`; keep limits generous.
 - `src/lib/pipeline.ts` — transcribe → summarize → send.
 - `src/lib/bot.ts` — chat commands (shared by both channels) (`absent BA101 [days]`, `missed BA101`, `summary`, `stop`, help) and Q&A.
 - `src/lib/transcript.ts` — word→segment grouping, pasted transcript parsing, `[mm:ss]` citation helpers.

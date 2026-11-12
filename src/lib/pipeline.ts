@@ -4,6 +4,7 @@ import { env } from "./env";
 import { wordsToSegments, transcriptForPrompt, fmtTime } from "./transcript";
 import { summarizeTranscript } from "./claude";
 import { sendMessage } from "./messaging";
+import { defaultOptions, type SummaryOptions } from "./templates";
 
 export const BUCKET = "lectures";
 
@@ -78,7 +79,7 @@ export async function transcribeLecture(lectureId: string) {
   }
 }
 
-export async function summarizeLecture(lectureId: string) {
+export async function summarizeLecture(lectureId: string, options: SummaryOptions = defaultOptions()) {
   const lecture = await getLecture(lectureId);
   const segments = await getSegments(lectureId);
   if (!segments.length) throw new Error("Transcribe the lecture first.");
@@ -90,9 +91,10 @@ export async function summarizeLecture(lectureId: string) {
       title: lecture.title,
       date: lecture.lecture_date,
       transcript: transcriptForPrompt(segments),
+      options,
     });
     const { error } = await db().from("summaries").upsert(
-      { lecture_id: lectureId, ...result, created_at: new Date().toISOString() },
+      { lecture_id: lectureId, ...result, template: options.template, options: { addons: options.addons, note: options.note }, created_at: new Date().toISOString() },
       { onConflict: "lecture_id" },
     );
     if (error) throw new Error(`save summary: ${error.message}`);

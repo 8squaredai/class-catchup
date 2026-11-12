@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { env } from "./env";
-import { loadSkill } from "./skill";
+import { loadSkill, loadSkillFile } from "./skill";
+import { defaultOptions, templateInfo, type SummaryOptions } from "./templates";
 
 let client: Anthropic | null = null;
 function anthropic() {
@@ -13,6 +14,12 @@ function textOf(msg: Anthropic.Message): string {
     .filter((b): b is Anthropic.TextBlock => b.type === "text")
     .map((b) => b.text)
     .join("");
+}
+
+/** Parse a structured-output reply, with a clear error if Claude ran out of tokens (thinking counts toward max_tokens). */
+function parseJson<T>(msg: Anthropic.Message, what: string): T {
+  if (msg.stop_reason === "max_tokens") throw new Error(`The ${what} was cut off (output limit reached). Try again or pick a shorter template.`);
+  return JSON.parse(textOf(msg)) as T;
 }
 
 export type SummaryResult = {
@@ -29,12 +36,20 @@ export async function summarizeTranscript(opts: {
   title: string;
   date: string;
   transcript: string;
+  options?: SummaryOptions;
 }): Promise<SummaryResult> {
   const model = env.claudeModel();
+  const o = opts.options ?? defaultOptions();
+  const t = templateInfo(o.template);
+  // Progressive disclosure: the shared skill + only the template the professor picked.
+  const system = `${loadSkill("lecture-summary")}\n\n---\n\n# Selected template\n\n${loadSkillFile("lecture-summary", `templates/${t.id}.md`)}`;
+  const request =
+    `Template: ${t.id} (${t.label})\nAdd-ons: ${o.addons.length ? o.addons.join(", ") : "none"}\n` +
+    (o.note ? `Professor's note (steers emphasis only, never adds facts):\n<professor_note>\n${o.note}\n</professor_note>\n` : "");
   const msg = await anthropic().messages.create({
     model,
-    max_tokens: 4000,
-    system: loadSkill("lecture-summary"),
+    max_tokens: 16000, // includes the model's thinking
+    system,
     output_config: {
       format: {
         type: "json_schema",
@@ -54,11 +69,11 @@ export async function summarizeTranscript(opts: {
         role: "user",
         content:
           `Course: ${opts.courseCode} – ${opts.courseName}\nLecture: ${opts.title}\nDate: ${opts.date}\n\n` +
-          `<transcript>\n${opts.transcript}\n</transcript>\n\nWrite the catch-up summary.`,
+          `<transcript>\n${opts.transcript}\n</transcript>\n\n${request}\nWrite the catch-up summary using the selected template.`,
       },
     ],
   });
-  const parsed = JSON.parse(textOf(msg)) as { markdown: string; whatsapp_text: string };
+  const parsed = parseJson<{ markdown: string; whatsapp_text: string }>(msg, "summary");
   return {
     ...parsed,
     model,
@@ -90,7 +105,7 @@ export async function answerQuestion(opts: {
 }): Promise<AnswerResult> {
   const msg = await anthropic().messages.create({
     model: env.claudeModel(),
-    max_tokens: 1200,
+    max_tokens: 4000, // includes the model's thinking
     system: [
       { type: "text", text: QA_RULES },
       {
@@ -116,7 +131,7 @@ export async function answerQuestion(opts: {
     },
     messages: [...(opts.history ?? []), { role: "user", content: opts.question }],
   });
-  const parsed = JSON.parse(textOf(msg)) as { covered: boolean; answer: string };
+  const parsed = parseJson<{ covered: boolean; answer: string }>(msg, "answer");
   return {
     ...parsed,
     input_tokens: msg.usage.input_tokens,
